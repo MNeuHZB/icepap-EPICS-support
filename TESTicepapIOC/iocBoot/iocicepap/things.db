@@ -1,0 +1,49 @@
+record(ao, axisSelect) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 1000)AxisSelect")
+  field(VAL, "1")
+}
+
+record(ao, blink) {
+  field(DTYP, "asynFloat64")
+  field(OUT, "@asyn($(PORT), $(ADDR), 1000)BLINK")
+  info(asyn:READBACK,1)
+}
+
+record(ai, blink_back) {
+  field(DTYP, "asynFloat64")
+  field(INP, "@asyn($(PORT), $(ADDR), 1000)BLINK")
+  field(SCAN, "1 second")
+}
+
+record(ai, wtemp) {
+  field(DTYP, "asynFloat64")
+  field(INP, "@asyn($(PORT), $(ADDR), 1000)WTEMP")
+  field(SCAN, "1 second")
+}
+
+record(ao, powerOn) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 1000)POWERON")
+}
+
+record(ao, powerOff) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 1000)POWEROFF")
+}
+
+record(ao, reset) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 1000)RESET")
+}
+
+record(bo, allreset) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 1000)ALLRESET")
+}
+
+record(ai, status) {
+  field(DTYP, "asynInt32")
+  field(INP, "@asyn($(PORT), $(ADDR), 1000)getStatus")
+  field(SCAN, "1 second")
+}

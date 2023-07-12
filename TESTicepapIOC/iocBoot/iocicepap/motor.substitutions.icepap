@@ -1,0 +1,16 @@
+################################################################################
+# PORT - asynPort created for the Phytron controller
+# ADDR - Address of the axis - right digit represents the index of the axis
+#       of a I1AM01 module, the remaining digit(s) on the lef represent the 
+#       index of the I1AM01 module
+################################################################################
+
+# /home/user/epics7/support/icepap/db/motorIcepap.db
+# $(ICEPAP)/db/motorIcepap.db
+file "$(ICEPAP)/db/motorIcepap.db"
+{
+pattern
+{P,         N,      M,     DTYP,         PORT,      ADDR, DESC,         EGU,   DIR,  VELO, VBAS, VMAX,  ACCL,  BDST,  BVEL,  BACC,  MRES,      ERES,      PREC,  DHLM,    DLLM,   INIT, UEIP}
+{icepap:,  1,  "m$(N)",  "asynMotor",  motionPort,  1,   "motor $(N)",  Deg,   Pos,  90,   1,    720,   .5,    0,     180,   .2,    0.00144,   0.00144,   5,     200000,  -200000,  "", 0}
+{icepap:,  2,  "m$(N)",  "asynMotor",  motionPort,  2,   "motor $(N)",  Deg,   Pos,  90,   1,    180,   .5,    0,     180,   .2,    0.00144,   0.00144,   5,     14400,  -14400,  "", 0}
+}
