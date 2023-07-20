@@ -53,7 +53,9 @@ icepapController::icepapController(const char *icepapPortName, const char *asynP
   createParam("POWERON", asynParamInt32, &this->powerOn_);
   createParam("POWEROFF", asynParamInt32, &this->powerOff_);
   createParam("WTEMP", asynParamFloat64, &this->wtemp_);
-  createParam("getStatus" ,asynParamInt32 ,&this->status_);
+  createParam("getStatus", asynParamInt32 ,&this->status_);
+  createParam("setASCIIcommand", asynParamOctet, &this->asciiCMD_);
+  createParam("getASCIIrespons", asynParamOctet, &this->asciiRESPONS_);
 	 
 	status = pasynOctetSyncIO->connect(asynPortName, 0, &pasynUserController_, NULL);
 	
@@ -162,7 +164,8 @@ asynStatus icepapController::readFloat64(asynUser *pasynUser, epicsFloat64 *valu
   status = asynPortDriver::readFloat64(pasynUser, value);
 	
   if(pasynUser->reason == blink_){
-  	status = sendPapCommand("#%d:?blink", &reply);
+    sprintf(outString_, "#%d:?blink", axisSelection);
+  	status = sendPapCommand(outString_, &reply);
     	
   	try{
   		*value = stod(reply.substr(8));
@@ -249,6 +252,89 @@ asynStatus icepapController::sendPapCommand(const char *arg, string *result){
   
   return status;
 }
+
+/** Called when asyn clients call pasynOctet->write().
+  * This function performs actions for some parameters, including AttributesFile.
+  * For all parameters it sets the value in the parameter library and calls any registered callbacks..
+  * \param[in] pasynUser pasynUser structure that encodes the reason and address.
+  * \param[in] value Address of the string to write.
+  * \param[in] nChars Number of characters to write.
+  * \param[out] nActual Number of characters actually written. */
+asynStatus icepapController::writeOctet(asynUser *pasynUser, const char *value, size_t nChars, size_t *nActual) {
+  int addr = 0;
+  int function = pasynUser->reason;
+  asynStatus status = asynSuccess;
+  string reply;
+
+  status = getAddress(pasynUser, &addr);
+  if (status != asynSuccess) return (status);
+  // Set the parameter in the parameter library.
+  status = (asynStatus) setStringParam(addr, function, (char *) value);
+  if (status != asynSuccess) return (status);
+
+  if (function == asciiCMD_){
+    status = sendPapCommand(value, &reply);
+    printf("cmd: %s rsp: %s\n", value, reply.c_str());
+    status = (asynStatus) setStringParam(addr, asciiRESPONS_, reply.c_str());
+  }
+
+  // Do callbacks so higher layers see any changes
+  callParamCallbacks(addr, addr);
+
+  //Call base class method. This will handle callCallbacks even if the function was handled here.
+  status = asynMotorController::writeOctet(pasynUser, value, nChars, nActual);
+
+  *nActual = nChars;
+
+  return status;
+}
+
+/** Called when asyn clients call pasynOctet->read().
+  * The base class implementation simply returns the value from the parameter library.
+  * Derived classes rarely need to reimplement this function.
+  * \param[in] pasynUser pasynUser structure that encodes the reason and address.
+  * \param[in] value Address of the string to read.
+  * \param[in] maxChars Maximum number of characters to read.
+  * \param[out] nActual Number of characters actually read. Base class sets this to strlen(value).
+  * \param[out] eomReason Reason that read terminated. Base class sets this to ASYN_EOM_END. */
+/*asynStatus icepapController::readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason)
+{
+    int function;
+    const char *paramName;
+    int addr;
+    asynStatus status = asynSuccess;
+    //epicsTimeStamp timeStamp; getTimeStamp(&timeStamp);
+    //static const char *functionName = "readOctet";
+
+    status = parseAsynUser(pasynUser, &function, &addr, &paramName);
+    if (status != asynSuccess) return status;
+    status = asynMotorController::readOctet(pasynUser, value, maxChars, nActual, eomReason);
+
+    printf("readOctet");*/
+
+
+    //printf("  readOctet sVal[%d]=\"%.*s\" addr=%d %d/%s %d\n", static_cast<int>(*nActual), value, addr, function, paramName, status);
+
+
+    /* We just read the current value of the parameter from the parameter library.
+     * Those values are updated whenever anything could cause them to change */
+    //status = (asynStatus)getStringParam(addr, function, (int)maxChars, value);
+    /* Set the timestamp */
+    /*pasynUser->timestamp = timeStamp;
+    getParamAlarmStatus(addr, function, &pasynUser->alarmStatus);
+    getParamAlarmSeverity(addr, function, &pasynUser->alarmSeverity);
+    if (status)
+        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                  "%s:%s: status=%d, function=%d, name=%s, value=%s",
+                  driverName, functionName, status, function, paramName, value);
+    else
+        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+              "%s:%s: function=%d, name=%s, value=%s\n",
+              driverName, functionName, function, paramName, value);
+    if (eomReason) *eomReason = ASYN_EOM_END;
+    *nActual = strlen(value)+1;*/
+    /*return status;
+}*/
 
 /** Creates a new icepapAxis object.
   * \param[in] pC Pointer to the phytronController to which this axis belongs.

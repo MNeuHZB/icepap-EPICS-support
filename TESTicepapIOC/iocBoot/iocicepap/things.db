@@ -1,3 +1,33 @@
+record(calcout, angl) {
+  field(DESC, "angle")
+  field(SCAN, ".1 second")
+  field(INPA, "icepap:m1.RBV")
+  field(CALC, "A%360")
+  field(PREC, 4)
+}
+
+record(calcout, time) {
+  field(DESC, "angle")
+  field(SCAN, ".1 second")
+  field(VAL, 0)
+  field(INPA, "time")
+  field(CALC, "A+1")
+  field(PREC, 1)
+}
+
+record(stringout, cmdWrite) {  
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),0,$(TIMEOUT=4))setASCIIcommand")
+  field(FLNK, cmdResponse)
+  field(SCAN, "Passive")
+}
+
+record(stringin, cmdResponse) {
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),0,$(TIMEOUT=4))getASCIIrespons")
+  field(SCAN, "Passive")
+}
+
 record(ao, axisSelect) {
   field(DTYP, "asynInt32")
   field(OUT, "@asyn($(PORT), $(ADDR), 1000)AxisSelect")

@@ -17,6 +17,8 @@ public:
 	int powerOff_;
 	int wtemp_;
 	int status_;
+	int asciiCMD_;
+	int asciiRESPONS_;
 
 	char outString_[256];
 	int axisSelection;
@@ -26,7 +28,9 @@ public:
  	asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
  	asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
  	asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
- 	
+ 	asynStatus writeOctet(asynUser *pasynUser, const char *value, size_t nChars, size_t *nActual);
+ 	//asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason);
+
  	//asynStatus sendPapCommand(string arg, string *result = nullptr);
  	asynStatus sendPapCommand(const char *arg, string *result = nullptr);
  	
