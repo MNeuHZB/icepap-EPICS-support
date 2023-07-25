@@ -34,7 +34,8 @@ dbLoadTemplate("$(TOP)/iocBoot/$(IOC)/motor.substitutions.icepap")
 
 cd "${TOP}/iocBoot/${IOC}"
 
-dbLoadRecords("things.db","PORT=motionPort,ADDR=0")
+dbLoadRecords("things.db","PORT=motionPort,ADDR=0,P=icepap:")
+dbLoadRecords("$(ICEPAP)/db/basicICEPAP.db","PORT=motionPort,ADDR=0,P=icepap:")
 
 iocInit
 

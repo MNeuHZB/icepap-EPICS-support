@@ -9,6 +9,7 @@ include $(TOP)/configure/CONFIG
 #DB += xxx.db
 
 DB += motorIcepap.db
+DB += basicICEPAP.db
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add

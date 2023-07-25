@@ -1,0 +1,62 @@
+record(stringout, $(P)cmdWrite) {  
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT), $(ADDR=0), $(TIMEOUT=4))setASCIIcommand")
+  field(FLNK, "$(P)cmdResponse")
+  field(SCAN, "Passive")
+}
+
+record(stringin, $(P)cmdResponse) {
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT), $(ADDR=0), $(TIMEOUT=4))getASCIIrespons")
+  field(SCAN, "Passive")
+}
+
+record(ao, $(P)axisSelect) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 4)AxisSelect")
+  field(VAL, "1")
+}
+
+record(ao, $(P)blink) {
+  field(DTYP, "asynFloat64")
+  field(OUT, "@asyn($(PORT), $(ADDR), 4)BLINK")
+  info(asyn:READBACK,1)
+}
+
+record(ai, $(P)blink_back) {
+  field(DTYP, "asynFloat64")
+  field(INP, "@asyn($(PORT), $(ADDR), 4)BLINK")
+  field(SCAN, "1 second")
+}
+
+record(ai, $(P)wtemp) {
+  field(DTYP, "asynFloat64")
+  field(INP, "@asyn($(PORT), $(ADDR), 4)WTEMP")
+  field(SCAN, "1 second")
+}
+
+record(ao, $(P)powerOn) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 4)POWERON")
+}
+
+record(ao, $(P)powerOff) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 4)POWEROFF")
+}
+
+record(ao, $(P)reset) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 4)RESET")
+}
+
+record(bo, $(P)allreset) {
+  field(DTYP, "asynInt32")
+  field(OUT, "@asyn($(PORT), $(ADDR), 4)ALLRESET")
+}
+
+record(ai, $(P)status) {
+  field(DTYP, "asynInt32")
+  field(INP, "@asyn($(PORT), $(ADDR), 4)getStatus")
+  field(SCAN, "1 second")
+}
